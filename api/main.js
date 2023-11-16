@@ -107,10 +107,11 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 
-app.get("/api/user/:id", (req, res) => {
+app.get("/api/user/:id", async (req, res) => {
     let id = req.params.id
     let sql = "SELECT name, points, elo, level, xp, statistics FROM users WHERE id = ?";
-    con.query(sql, [id], function (err, result, fields) {
+    let con = await getConnection();
+    await con.query(sql, [id], function (err, result, fields) {
         if (err) throw err;
         
         res.writeHead(200, { "Content-Type": "application/json" });
