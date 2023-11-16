@@ -37,22 +37,20 @@ app.post("/api/register", async (req, res) => {
 
     con = await getConnection();
 
-    console.log(3)
-    await con.query("SELECT * FROM users WHERE name = ?", [name], function(err, result, fields) {
-        console.log(2);
+    user = await con.query("SELECT * FROM users WHERE name = ?", [name], function(err, result, fields) {
+        
         if (err) throw err;
-        console.log(result);
-        if (result.length()) {
-            console.log(1);
-            return res.json({"error": "userexists"});
-        };
+            return result;
     });
+    if (user[0].length) {
+        return res.json({"error": "userexists"})
+    }
 
 
-    // let sql = "INSERT INTO users(name, password) VALUES (?, ?)";
-    // await con.query(sql, [name, password, name], function (err, result, fields) {
-    //     if (err) throw err;
-    // });
+    let sql = "INSERT INTO users(name, password) VALUES (?, ?)";
+    await con.query(sql, [name, password, name], function (err, result, fields) {
+        if (err) throw err;
+    });
     
     id = await con.query("SELECT id FROM users WHERE name = ?", [name], function (err, result, fields) {
         if (err) throw err;
