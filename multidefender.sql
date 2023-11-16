@@ -51,7 +51,7 @@ CREATE TABLE `games` (
 -- Table structure for table `sesison`
 --
 
-CREATE TABLE `sesison` (
+CREATE TABLE `session` (
   `token` varchar(255) NOT NULL,
   `user_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -94,7 +94,7 @@ ALTER TABLE `games`
 --
 -- Indexes for table `sesison`
 --
-ALTER TABLE `sesison`
+ALTER TABLE `session`
   ADD PRIMARY KEY (`token`);
 
 --
