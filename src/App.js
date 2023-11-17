@@ -1,16 +1,16 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import Render from './engine/render';
 
 function App() {
+
+// cia temp yra galit trinti ta renderi -Ignas
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Main puslapis bus cia
-        </p>
-      </header>
+      <Render />
     </div>
   );
 }
+
 
 export default App;
