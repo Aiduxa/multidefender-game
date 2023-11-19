@@ -278,11 +278,12 @@ app.post("/api/friends/remove/:id", async (req, res) => {
             return res.json( {"error": "sessionnotfound"})
 
         }
-
-
-
     };
 });
+
+//Prideti matchmakinga
+//Elo skaiciavima
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
