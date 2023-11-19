@@ -174,6 +174,10 @@ app.post("/api/friends/add/:id", async (req, res) => {
 
         let usersession = result[0][0];
 
+        if (usersession.id == id) {
+            return res.json( {"error": "cannotaddurselfdummy"})
+        }
+
         let userfriends = await con.query("SELECT * FROM friends WHERE id = ?", [usersession.id])
 
         userfriends = userfriends[0][0]
@@ -213,9 +217,71 @@ app.post("/api/friends/add/:id", async (req, res) => {
     } else {
         return res.json({"error": "frienduserdoesnotexist"});
     };
+});
+
+app.post("/api/friends/remove/:id", async (req, res) => {
+    let id = req.params.id;
+    let token = req.body.token;
+
+    let con = await getConnection();
+
+    let result = await con.query("SELECT * FROM friends WHERE id = ?", [id]);
+
+    let player = result[0][0];
+
+    if (player) {
+        
+        result = await con.query("SELECT * FROM session where token = ?", [token]);
+
+        let user = result[0][0];
+
+        if (user) {
+
+            if (user.id == id) {
+                return res.json( {"error": "cannotremoveurselfdummy"} )
+            }
+
+            result = await con.query("SELECT * FROM friends WHERE id = ?", [user.id]);
+    
+            let user_friends = result[0][0];
+
+            if (user_friends) {
+
+                player.friends = JSON.parse(player.friends);
+                user_friends.friends = JSON.parse(user_friends.friends);
+                player.requests = JSON.parse(player.requests);
+                user_friends.requests = JSON.parse(user_friends.requests);
+        
+                if (String(user.id) in player.friends) {
+                    delete player.friends[String(user.id)];
+                    delete user_friends.friends[String(player.id)];
+                    
+                    await con.query("UPDATE friends SET friends = ? WHERE id = ?", [JSON.stringify(player.friends), player.id])
+                    await con.query("UPDATE friends SET friends = ? WHERE id = ?", [JSON.stringify(user_friends.friends), user.id])
+                    return res.json( {"status": "success"} )
+                } else if (String(user.id) in player.requests) {
+                
+                    delete player.requests[String(user.id)];
+
+                    await con.query("UPDATE friends SET requests = ? WHERE id = ?", [JSON.stringify(player.requests), player.id]);
+
+                    return res.json( {"status": "success"} )
+                } else {
+                    return res.json( {"status": "notassociated"} )
+                }
+
+            } else {
+                return res.json( {"error": "somethinghappened"} )
+            }
+    
+        } else {
+            return res.json( {"error": "sessionnotfound"})
+
+        }
 
 
 
+    };
 });
 
 app.listen(port, () => {
